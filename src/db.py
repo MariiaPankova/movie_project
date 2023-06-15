@@ -21,7 +21,7 @@ class DBConnector:
     def init_db(cls, df: pd.DataFrame, embeddings: np.ndarray, drop=False):
         connections.connect("default", host="localhost", port="19530")
         if drop:
-           utility.drop_collection("movie_collection") 
+            utility.drop_collection("movie_collection")
 
         fields = [
             FieldSchema(name="pk", dtype=DataType.INT64, is_primary=True, auto_id=True),
@@ -54,10 +54,8 @@ class DBConnector:
         utility.drop_collection("movie_collection")
         return cls.init_db(df, embeddings)
 
-    def get_nearest(self, query: list, k_nearest: int = 5):
+    def get_nearest(self, query_embedded: np.ndarray, k_nearest: int = 5):
         search_params = {"metric_type": "IP", "params": {"nlist": 256}}
-        model = sentence_transformers.SentenceTransformer("all-MiniLM-L6-v2")
-        query_embedded = model.encode(query)
 
         results = self.collection.search(
             query_embedded,
@@ -69,9 +67,6 @@ class DBConnector:
 
         return {hit.entity.get("name"): hit.entity.get("desc") for hit in results[0]}
 
-    def add_to_base(self, name: list, desc: list):
-        model = sentence_transformers.SentenceTransformer("all-MiniLM-L6-v2")
-        desc_embedded = model.encode(desc)
+    def add_to_base(self, name: list, desc: list, desc_embedded: np.ndarray):
         entities = [name, desc, desc_embedded]
-        print(entities)
         self.collection.insert(entities)
