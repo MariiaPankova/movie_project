@@ -14,13 +14,21 @@ from .settings import app_settings
 
 class DBConnector:
     def __init__(self) -> None:
-        connections.connect(alias=app_settings.db_alias, host=app_settings.db_host, port=app_settings.db_port)
+        connections.connect(
+            alias=app_settings.db_alias,
+            host=app_settings.db_host,
+            port=app_settings.db_port,
+        )
         self.collection = Collection(app_settings.db_collection_name)
         self.collection.load()
 
     @classmethod
     def init_db(cls, df: pd.DataFrame, embeddings: np.ndarray, drop=False):
-        connections.connect(alias=app_settings.db_alias, host=app_settings.db_host, port=app_settings.db_port)
+        connections.connect(
+            alias=app_settings.db_alias,
+            host=app_settings.db_host,
+            port=app_settings.db_port,
+        )
         if drop:
             utility.drop_collection(app_settings.db_collection_name)
 
@@ -31,7 +39,9 @@ class DBConnector:
             FieldSchema(name="embeddings", dtype=DataType.FLOAT_VECTOR, dim=384),
         ]
         schema = CollectionSchema(fields)
-        movie_collection = Collection(name=app_settings.db_collection_name, schema=schema)
+        movie_collection = Collection(
+            name=app_settings.db_collection_name, schema=schema
+        )
 
         entities = [
             df["tittle"].to_numpy(),
@@ -51,7 +61,11 @@ class DBConnector:
 
     @classmethod
     def recreate_db(cls, df: pd.DataFrame, embeddings: np.ndarray):
-        connections.connect(alias=app_settings.db_alias, host=app_settings.db_host, port=app_settings.db_port)
+        connections.connect(
+            alias=app_settings.db_alias,
+            host=app_settings.db_host,
+            port=app_settings.db_port,
+        )
         utility.drop_collection(app_settings.db_collection_name)
         return cls.init_db(df, embeddings)
 

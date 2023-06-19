@@ -1,0 +1,9 @@
+fastapi
+numpy
+pandas
+pydantic
+pymilvus
+rich
+sentence_transformers
+typer
+uvicorn
