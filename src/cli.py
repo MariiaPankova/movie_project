@@ -1,5 +1,3 @@
-# https://www.sbert.net/examples/applications/semantic-search/README.html
-
 import typer
 import pandas as pd
 import sentence_transformers
