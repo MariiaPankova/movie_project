@@ -37,6 +37,9 @@ app = FastAPI(lifespan=lifespan)
 
 @app.put("/movie")
 def insert(item: models.MovieItem):
+    """
+    Inserts a new datapoint to a base with a movie name and description.
+    """
     try:
         desc_embedded = model.encode([item.description])
         db.add_to_base([item.name], [item.description], desc_embedded)
@@ -48,6 +51,9 @@ def insert(item: models.MovieItem):
 
 @app.get("/movie")
 def search(desctiption: str, k_nearest: int = 5) -> list[models.MovieItem] | dict:
+    """
+    Returns best --k_nearest recomendations for your description.
+    """
     try:
         query_embedded = model.encode([desctiption])
         db_nearest = db.get_nearest(query_embedded, k_nearest)
@@ -57,7 +63,3 @@ def search(desctiption: str, k_nearest: int = 5) -> list[models.MovieItem] | dic
         ]
     except Exception as e:
         return {"STATUS": "ERROR", "MESSAGE": str(e), "DETAIL": traceback.format_exc()}
-
-
-if __name__ == "__main__":
-    app.run()
