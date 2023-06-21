@@ -1,23 +1,17 @@
 # Movie recomendation system
 
-Сервіс, який дозволяє знайти схожі фільми за текстовим описом.
+A python [FastAPI](https://fastapi.tiangolo.com/) service for content-based movie recomendational system based on [SBERT](https://www.sbert.net/) using [Milvus](https://milvus.io/) vector database. 
 
-Функціонал:
-1. За текстовим описом знайти топ N найбільш схожих фільмів.
-2. За декількома текстовими описами знайти топ N найбільш схожих.
-3. Додати текстовий опис до бази.
+Features:
+1. Finds the best matching movie for your text desctiption.
+2. Adds a new movie to a DB.
 
+ ## Quickstart:
+ 1. Download dataset from [kaggle](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata) and extract to `dataset` folder.
+ 2. Run  ```docker compose up -d --build``` to start API and DB.
+    1. See API logs with ```docker compose logs movie_api```
+ 3. You can see API docs on http://localhost:8000/docs
+ 4. To populate DB with dataset instances run 
+   ```db_host=localhost python src/cli.py init-db 'dataset/tmdb_5000_credits.csv' 'dataset/tmdb_5000_movies.csv' --drop```
 
-## TODO 
-  - [x]  знайти датасет з текстовими описами та  назвою фільмів
-  - [ ]  підібрати модель для побудови текстового ембедінгу
-    - [x]  глянути huggingface
-    - [ ]  зрозуміти різницю між енкодер-онлі, декодер-онлі і енкодер-декодер-лнн і вибрати модель для задачі
-- [x] написати скрипт для генерації ембедінгу з текстового опису
-- [x] знайти підходящу векторну базу даних (Milvus)
-  - [x] підняти з нею докер-контейнер
-- [x] записати ембедінги в базу
-- [x] написати скрипт який робить запит в базу та реалізує функціонал
-- [ ] підготувати докер компоуз який всю цю шляпу буде тримать і розгортат
-- [x] зробити API на fastAPI
-- [ ] зробити UI на Gradio 
+Read CLI docs using ```python src/cli.py --help```

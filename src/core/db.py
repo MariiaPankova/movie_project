@@ -23,7 +23,7 @@ class DBConnector:
         self.collection.load()
 
     @classmethod
-    def init_db(cls, df: pd.DataFrame, embeddings: np.ndarray, drop=False):
+    def init_db(cls, drop: bool=False):
         connections.connect(
             alias=app_settings.db_alias,
             host=app_settings.db_host,
@@ -42,15 +42,7 @@ class DBConnector:
         movie_collection = Collection(
             name=app_settings.db_collection_name, schema=schema
         )
-
-        entities = [
-            df["tittle"].to_numpy(),
-            df["overview"].to_numpy(),
-            embeddings,
-        ]
-        insert_result = movie_collection.insert(entities)
-        movie_collection.flush()
-
+        
         index = {
             "index_type": "IVF_FLAT",
             "metric_type": "IP",
@@ -58,6 +50,15 @@ class DBConnector:
         }
         movie_collection.create_index("embeddings", index)
         return cls()
+
+    def fill_db(self, df: pd.DataFrame, embeddings: np.ndarray):
+        entities = [
+            df["tittle"].to_numpy(),
+            df["overview"].to_numpy(),
+            embeddings,
+        ]
+        insert_result = self.collection.insert(entities)
+        self.collection.flush()
 
     @classmethod
     def recreate_db(cls, df: pd.DataFrame, embeddings: np.ndarray):
@@ -67,7 +68,9 @@ class DBConnector:
             port=app_settings.db_port,
         )
         utility.drop_collection(app_settings.db_collection_name)
-        return cls.init_db(df, embeddings)
+        obj = cls.init_db()
+        obj.fill_db(df, embeddings)
+        return obj
 
     def get_nearest(self, query_embedded: np.ndarray, k_nearest: int = 5):
         search_params = {"metric_type": "IP", "params": {"nlist": 256}}

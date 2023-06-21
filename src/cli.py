@@ -10,8 +10,8 @@ from pymilvus import (
     DataType,
     Collection,
 )
-from db import DBConnector
-from model import get_model
+from core.db import DBConnector
+from core.model import get_model
 from typing import List
 from rich import print
 
@@ -39,7 +39,9 @@ def init_db(df_path1: str, df_path2: str, drop: bool = False):
     df = get_df(df_path1, df_path2)
     model = get_model()
     embeddings = model.encode(df["overview"])
-    return DBConnector.init_db(df, embeddings, drop)
+    db = DBConnector.init_db(drop)
+    db.fill_db(df, embeddings)
+    return db
 
 
 @app.command()

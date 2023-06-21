@@ -11,14 +11,15 @@ from pymilvus import (
     Collection,
 )
 
-from .db import DBConnector
+from .core.db import DBConnector
 from typing import List, Union
 from rich import print
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from . import models
-from .model import get_model
+from .core import models
+from .core.model import get_model
 import traceback
+import pymilvus.exceptions as e
 
 db = None
 model = None
@@ -27,7 +28,10 @@ model = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global db, model
-    db = DBConnector()
+    try:
+        db = DBConnector()
+    except e.SchemaNotReadyException:
+        db = DBConnector.init_db() 
     model = get_model()
     yield
 
